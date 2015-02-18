@@ -1,0 +1,14 @@
+{application, dby,
+ [
+  {description, "An Erlang dby library"},
+  {vsn, "1"},
+  {modules, [
+             dby
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {env, []}
+ ]}.
