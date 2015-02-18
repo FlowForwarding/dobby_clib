@@ -1,6 +1,6 @@
-{application, dby,
+{application, dobby_clib,
  [
-  {description, "An Erlang dby library"},
+  {description, "Dobby client library"},
   {vsn, "1"},
   {modules, [
              dby
