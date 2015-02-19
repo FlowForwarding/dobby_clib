@@ -10,7 +10,7 @@
          identifiers/4
         ]).
 
--include("../include/dobby.hrl").
+-include_lib("dobby_clib/include/dobby.hrl").
 
 % =============================================================================
 % API functions
@@ -54,7 +54,7 @@ publish(Endpoint1, Endpoint2, LinkMetadata, Options) ->
 publish(Endpoint, Options) when is_tuple(Endpoint); is_binary(Endpoint) ->
     publish([Endpoint], Options);
 publish(Data, Options) ->
-    dby_publish:publish(Data, Options).
+    call(dby_publish, [Data, Options]).
 
 % @doc
 % `search/4' performs a fold over the graph beginning with the identifier
@@ -82,7 +82,7 @@ publish(Data, Options) ->
 % @end
 -spec search(Fun :: search_fun(), Acc :: term(), StartIdentifier :: identifier(), [search_options()]) -> term() | {error, reason()}.
 search(Fun, Acc, StartIdentifier, Options) ->
-        dby_search:search(Fun, Acc, StartIdentifier, Options).
+    call(dby_search, [Fun, Acc, StartIdentifier, Options]).
 
 % @doc
 % When used as the function for `dby:search/4', returns the list of
@@ -92,3 +92,11 @@ search(Fun, Acc, StartIdentifier, Options) ->
 -spec identifiers(identifier(), jsonable(), jsonable(), list()) -> {continue, list()}.
 identifiers(Identifier, IdMetadata, LinkMetadata, Acc) ->
     {continue, [{Identifier, IdMetadata, LinkMetadata} | Acc]}.
+
+% =============================================================================
+% Local functions
+% =============================================================================
+
+% call the dobby server
+call(Op, Args) ->
+    gen_server:call({global, dobby}, {Op, Args}).
