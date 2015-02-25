@@ -17,7 +17,7 @@
 % =============================================================================
 
 % @equiv publish([{Endpoint1, Endpoint2, LinkMetadata}], Options).
--spec publish(endpoint(), endpoint(), metadata(), [publish_option()]) -> ok | {error, reason()}.
+-spec publish(dby_endpoint(), dby_endpoint(), metadata(), [publish_option()]) -> ok | {error, reason()}.
 publish(Endpoint1, Endpoint2, LinkMetadata, Options) ->
     publish([{Endpoint1, Endpoint2, LinkMetadata}], Options).
 
@@ -50,7 +50,7 @@ publish(Endpoint1, Endpoint2, LinkMetadata, Options) ->
 % `publish/2' may also be called with an endpoint.  This is a convenience
 % for adding, removing, or modifying a single identifier.
 % @end
--spec publish([endpoint() | link()] | endpoint(), [publish_option()]) -> ok | {error, reason()}.
+-spec publish([dby_endpoint() | link()] | dby_endpoint(), [publish_option()]) -> ok | {error, reason()}.
 publish(Endpoint, Options) when is_tuple(Endpoint); is_binary(Endpoint) ->
     publish([Endpoint], Options);
 publish(Data, Options) ->
@@ -91,7 +91,7 @@ publish(Data, Options) ->
 % same identifier more than once.  If `loop' is not provided, `identifier'
 % loop detection is used.
 % @end
--spec search(Fun :: search_fun(), Acc :: term(), StartIdentifier :: identifier(), [search_options()]) -> term() | {error, reason()}.
+-spec search(Fun :: search_fun(), Acc :: term(), StartIdentifier :: dby_identifier(), [search_options()]) -> term() | {error, reason()}.
 search(Fun, Acc, StartIdentifier, Options) ->
     call(dby_search, [Fun, Acc, StartIdentifier, Options]).
 
@@ -100,7 +100,7 @@ search(Fun, Acc, StartIdentifier, Options) ->
 % identifiers traversed in the search as tuples containing the
 % identifier, the identifier's metadata, and the link's metadata.
 % @end
--spec identifiers(identifier(), jsonable(), jsonable(), list()) -> {continue, list()}.
+-spec identifiers(dby_identifier(), jsonable(), jsonable(), list()) -> {continue, list()}.
 identifiers(Identifier, IdMetadata, LinkMetadata, Acc) ->
     {continue, [{Identifier, IdMetadata, LinkMetadata} | Acc]}.
 

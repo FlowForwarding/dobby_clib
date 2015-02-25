@@ -1,5 +1,5 @@
 % an identifier
--type idenfier() :: binary().
+-type dby_identifier() :: binary().
 
 % identifier type
 %   system - used internally by dobby
@@ -20,10 +20,10 @@
                     delete.
 
 % identifier as an argument to functions
--type endpoint() :: identifier() | {identifier(), metadata()}.
+-type dby_endpoint() :: dby_identifier() | {dby_identifier(), metadata()}.
 
 % link as an argument to functions
--type link() :: {endpoint(), endpoint(), metadata()}.
+-type link() :: {dby_endpoint(), dby_endpoint(), metadata()}.
 
 % publish options
 -type publish_option() :: 'persistent' | 'message' | identifier_type().
@@ -32,7 +32,7 @@
 -type reason() :: term().
 
 % search function
--type search_fun() :: fun((identifier(),
+-type search_fun() :: fun((dby_identifier(),
                            IdMetadata :: jsonable(),
                            LinkMetadata :: jsonable(),
                            Acc0 :: term()) ->
