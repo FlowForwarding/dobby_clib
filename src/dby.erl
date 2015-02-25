@@ -74,11 +74,22 @@ publish(Data, Options) ->
 % and the new accumulator.  The possible control values are: `continue'
 % to continue the search, `skip' to continue the search but skip
 % navigating to any neighbors of this identifier, `stop' to stop the
-% search with this identifier.  The option `max_depth' controls how far
+% search with this identifier.
+% 
+% The option `max_depth' controls how far
 % to navigate away from the starting identifier.  `max_depth' of 0 means
 % no navigation is performed.  `max_depth' of one means search only
 % navigates to the immediate neighbors of the starting identifier.
 % If `max_depth' is not provided, `0' is used.
+%
+% The `loop' option specifies the loop detection algorithm.  `none' means
+% there is no loop detection and `Fun' may see the same identifier
+% more than once.  `link' means that a link is traversed only once, but
+% if there is more than one link to an identifier, `Fun' may see
+% the same identifier more than once.  `identifier' means that an
+% identifier is traversed only once, so `Fun' will never see the
+% same identifier more than once.  If `loop' is not provided, `identifier'
+% loop detection is used.
 % @end
 -spec search(Fun :: search_fun(), Acc :: term(), StartIdentifier :: identifier(), [search_options()]) -> term() | {error, reason()}.
 search(Fun, Acc, StartIdentifier, Options) ->

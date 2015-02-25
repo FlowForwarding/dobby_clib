@@ -1,8 +1,10 @@
-% transaction
--type transaction() :: term().
-
 % an identifier
 -type idenfier() :: binary().
+
+% identifier type
+%   system - used internally by dobby
+%   user - user data
+-type identifier_type() :: user | system.
 
 % JSONable datatypes for metadata
 -type jsonable() :: integer() |
@@ -24,13 +26,10 @@
 -type link() :: {endpoint(), endpoint(), metadata()}.
 
 % publish options
--type publish_option() :: 'persistent' | 'message'.
+-type publish_option() :: 'persistent' | 'message' | identifier_type().
 
 % error reasons
 -type reason() :: term().
-
-% subscription id
--type subscription() :: term().
 
 % search function
 -type search_fun() :: fun((identifier(),
@@ -50,7 +49,11 @@
 -type search_control() :: continue | skip | stop.
 
 % search options
--type search_options() :: breadth | depth | {max_depth, non_neg_integer()}.
+-type loop_detection() :: none | identifier | link.
+-type search_options() :: breadth |
+                          depth |
+                          {max_depth, non_neg_integer()} |
+                          {loop, loop_detection()}.
 
 % subscribe options
 -type subscribe_options() :: search_options() | {delta, delta_fun()} | persistent | message | {delivery, delivery_fun()}.
