@@ -7,6 +7,8 @@
 -export([publish/2,
          publish/4,
          search/4,
+         subscribe/4,
+         unsubscribe/1,
          identifiers/4
         ]).
 
@@ -94,6 +96,39 @@ publish(Data, Options) ->
 -spec search(Fun :: search_fun(), Acc :: term(), StartIdentifier :: dby_identifier(), [search_options()]) -> term() | {error, reason()}.
 search(Fun, Acc, StartIdentifier, Options) ->
     call(dby_search, [Fun, Acc, StartIdentifier, Options]).
+
+% @doc
+% `subscribe/4' creates a subscription and when successful returns a
+% subscription id. A subscription is a standing search and many of
+% the parameters for subscribe are the same as they are for search.
+% A subscription may be on publishing of persistent data or messages,
+% or both.  The subscription may provide a delta function, `DFun', that
+% computes the delta from previous search `Acc' to the new search `Acc'.
+% This function is only called `LastAcc' and `NewAcc' are different.  `DFun'
+% returns the computed `Delta', 'stop' to delete the subscription and no
+% further processing is performed on this subscription, or `nodelta'
+% to indicate that there was no delta.  If no `DFun' is not provided
+% in the options, Dobby uses `NewAcc' as the delta.  The subscription
+% may provide a delivery function `SFun'.  `SFun' is only called if there
+% is a delta in the subscription’s search result, that is, if `DFun' returns
+% a delta.
+% If `DFun' returns a delta, the `SFun' is called
+% with the delta.  If `DFun' returns nodelta, `SFun' is not called.  If
+% no `DFun' is provided, `SFun' is called with NewAcc.  `SFun' may return
+% `stop' to delete the subscription, otherwise it should return `ok'.  If
+% no `SFun' is provided, no deltas are delivered.
+% @end
+-spec subscribe(Fun :: search_fun(), Acc :: term(), StartIdentifier :: dby_identifier(), [subscribe_options()]) -> {ok, subscription_id()} | {error, reason()}.
+subscribe(Fun, Acc, StartIdentifier, Options) ->
+    call(dby_subscribe, [Fun, Acc, StartIdentifier, Options]).
+
+% @doc
+% `unsubscribe/1' deletes a subscription.  Attempts to delete an invalid
+% or already deleted subscription are ignored.
+% @end
+-spec unsubscribe(subscription_id()) -> ok.
+unsubscribe(SubscriptionId) ->
+    call(dby_unsubscribe, SubscriptionId).
 
 % @doc
 % When used as the function for `dby:search/4', returns the list of
