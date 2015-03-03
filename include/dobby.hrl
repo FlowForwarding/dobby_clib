@@ -41,7 +41,7 @@
 % search function
 -type search_fun() :: fun((dby_identifier(),
                            IdMetadata :: jsonable() | system_metadata(),
-                           LinkMetadata :: jsonable() | system_metadata(),
+                           Path :: [{dby_identifier(), jsonable() | system_metadata(), jsonable() | system_metadata()}],
                            Acc0 :: term()) ->
                             {search_control(), Acc1 :: term()} |
                             {search_control(), search_fun(), Acc1 :: term()}).

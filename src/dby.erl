@@ -60,23 +60,24 @@ publish(Data, Options) ->
 
 % @doc
 % `search/4' performs a fold over the graph beginning with the identifier
-% in `StartIdentifier'.  The first identifier passed to `Fun' is always
-% `StartIdentifier' with `LinkMetadata' as undefined.  The options `breadth'
-% and `depth' control how the graph is traversed.  For `breadth', all the
-% links to `StartIdentifier' are traversed first, followed by all the
-% links of `StartIdentifier'’s neighbors, etc.  For `depth', one link of
-% `StartIdentifier' is traversed, followed by one link of that neighbor
-% identifier, etc.  If neither is specified, `breadth' is used.  `Acc' is the
-% initial accumulator value.  `Fun' is called for every `Identifier'
-% traversed by search. It controls the graph traversal and may also
-% transform the result.  `Identifier' is an identifier, `IdMetadata' is
-% the metadata for that identifier, `LinkMetadata' is the metadata on
-% the link to the identifier, and `Acc0' is the current accumulator.
-% `Fun' returns a status that controls the next step of the navigation
-% and the new accumulator.  The possible control values are: `continue'
-% to continue the search, `skip' to continue the search but skip
-% navigating to any neighbors of this identifier, `stop' to stop the
-% search with this identifier.
+% in `StartIdentifier'. The options `breadth' and `depth' control how the
+% graph is traversed.  For `breadth', all the links to 'StartIdentifier'
+% are traversed first, followed by all the links of the 'StartIdentifier'
+% neighbors, etc.  For `depth', one link of `StartIdentifier' is traversed,
+% followed by one link of that neighbor identifier, etc.  If neither
+% is specified, `breadth' is used.  `Acc' is the initial accumulator
+% value.  `Fun' is called for every identifier traversed by search. It
+% controls the graph traversal and may also transform the result.
+% `Identifier' is the current identifier. `IdMetadata' is the metadata
+% for the identifier. `Path' is the list of identifiers with their
+% metadata and link metadata that is the path from `StartIdentifier'
+% to `Identifier'. `Acc0' is the current accumulator. The first identifier
+% in the `Path' list is immediate neighbor of `Identifier' that lead to
+% `Identifier'. `Fun' returns a status that controls the next step of the
+% navigation and the new accumulator.  The possible control values
+% are: `continue' to continue the search, `skip' to continue the search
+% but skip navigating to any neighbors of this identifier, `stop' to
+% stop the search with this identifier.
 % 
 % The option `max_depth' controls how far
 % to navigate away from the starting identifier.  `max_depth' of 0 means
