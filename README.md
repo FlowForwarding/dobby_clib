@@ -33,7 +33,7 @@ pong
 Prerequisites:
 ```
 Pubid = <<"mypublisherid">>.
-'''
+```
 
 Adding an identifier:
 ```
