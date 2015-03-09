@@ -4,12 +4,22 @@
 % dobby API
 % @end
 
--export([publish/3,
+-export([install/1,
+         publish/3,
          publish/5,
          search/4,
          subscribe/4,
          unsubscribe/1,
-         identifiers/4
+         identifiers/2,
+         identifier/1,
+         subscriptions/1,
+         subscription/1,
+         links/1,
+         identifiers/4,
+         links/4,
+         identifier_detail/4,
+         subscriptions_for_identifier/4,
+         subscription_detail/4
         ]).
 
 -include_lib("dobby_clib/include/dobby.hrl").
@@ -17,6 +27,17 @@
 % =============================================================================
 % API functions
 % =============================================================================
+
+% @doc
+% `install/1' installs a module containing user functions into the
+% server so they can be called properly.
+% @end
+-spec install(atom()) -> {module, atom()} | {error, term()}.
+install(Module) ->
+    case code:get_object_code(Module) of
+        error -> error;
+        ModuleBinary -> call(install_code, ModuleBinary)
+    end.
 
 % @equiv publish(PublisherId, [{Endpoint1, Endpoint2, LinkMetadata}], Options).
 -spec publish(publisher_id(), dby_endpoint(), dby_endpoint(), metadata_proplist(), [publish_option()]) -> ok | {error, reason()}.
@@ -145,15 +166,94 @@ unsubscribe(SubscriptionId) ->
     call(dby_unsubscribe, SubscriptionId).
 
 % @doc
+% List all identifiers starting at `StartIdentifier'
+% to a max depth of `Depth'.
+% @end
+identifiers(StartIdentifier, Depth) ->
+    dby:search(fun identifiers/4, [], StartIdentifier, [{max_depth, Depth}]).
+
+% @doc
+% Identifier metadata for `Identifier'.
+% @end
+identifier(Identifier) ->
+    dby:search(fun identifier_detail/4, [], Identifier, [{max_depth, 0}]).
+
+% @doc
+% List all subscriptions that are triggered by changes to  `Identifier'.
+% @end
+subscriptions(Identifier) ->
+    dby:search(fun subscriptions_for_identifier/4, [], Identifier, [{max_depth, 1}, system]).
+
+% @doc
+% Subscription metadata `SubscriptionId'.
+% @end
+subscription(SubscriptionId) ->
+    dby:search(fun subscription_detail/4, [], SubscriptionId, [{max_depth, 0}, system]).
+
+% @doc
+% Links and metadata for link `Identifier'.
+% @end
+links(Identifier) ->
+    dby:search(fun links/4, [], Identifier, [{max_depth, 1}]).
+
+% @doc
 % When used as the function for `dby:search/4', returns the list of
 % identifiers traversed in the search as tuples containing the
 % identifier, the identifier's metadata, and the link's metadata.
+% Acc0 = [].
 % @end
 -spec identifiers(dby_identifier(), metadata_info(), search_path(), list()) -> {continue, list()}.
-identifiers(Identifier, IdMetadata, [], Acc) ->
-    {continue, [{Identifier, IdMetadata, undefined} | Acc]};
-identifiers(Identifier, IdMetadata, [{_ ,_, LinkMetadata}], Acc) ->
-    {continue, [{Identifier, IdMetadata, LinkMetadata} | Acc]}.
+identifiers(Identifier, IdMetadata, _, Acc) ->
+    {continue, [{Identifier, IdMetadata} | Acc]}.
+
+% @doc
+% When used as the function for `dby:search/4', returns
+% all metadata for an identifier.
+% StartIdentifier = Identifier,
+% Acc0 = ignored,
+% Options = [{max_depth, 0}]
+% @end
+-spec identifier_detail(identifier(), all_metadata(), search_path(), undefined | metadata_info()) -> {stop, undefined | metadata_info()}.
+identifier_detail(_, Metadata, _, _) ->
+    {stop, Metadata}.
+
+% @doc
+% When used as the function for `dby:search/4', returns
+% all subscriptions for an identifier
+% use as the function to search.
+% StartIdentifier = SubscriptionId,
+% Acc0 = [],
+% Options = [{max_depth, 1}, system].
+% @end
+-spec subscriptions_for_identifier(identifier(), all_metadata(), search_path(), list()) -> {continue, list()}.
+subscriptions_for_identifier(SubscriptionId, _, [{_, _, #{system := subscription}} | _], Acc0) ->
+    {continue, [SubscriptionId | Acc0]};
+subscriptions_for_identifier(_, _, _, Acc0) ->
+    {continue, Acc0}.
+
+% @doc
+% When used as the function for `dby:search/4', returns
+% all metadata for a subscription.
+% StartIdentifier = SubscriptionId,
+% Acc0 = ignored,
+% Options = [{max_depth, 0}, system]
+% @end
+-spec subscription_detail(identifier(), all_metadata(), search_path(), undefined | system_metadata()) -> {stop, undefined | system_metadata()}.
+subscription_detail(_, Metadata = #{system := subscription}, _, _) ->
+    {stop, Metadata};
+subscription_detail(_, _, _, _) ->
+    {stop, undefined}.
+
+% @doc
+% When used as the function for `dby:search/4', returns the list of
+% Links and link metadata from the starting identifier.
+% Acc0 = [].
+% @end
+-spec links(dby_identifier(), metadata_info(), search_path(), list()) -> {continue, list()}.
+links(Identifier, _, [{_, _, LinkMetadata} | _], Acc) ->
+    {continue, [{Identifier, LinkMetadata} | Acc]};
+links(_, _, _, Acc) ->
+    {continue, Acc}.
 
 % =============================================================================
 % Local functions
