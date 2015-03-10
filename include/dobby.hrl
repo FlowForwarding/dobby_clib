@@ -74,6 +74,7 @@
 -type loop_detection() :: none | identifier | link.
 -type search_options() :: search_algorithm() |
                           identifier_type() |
+                          publish_type() |
                           {max_depth, non_neg_integer()} |
                           {loop, loop_detection()}.
 
