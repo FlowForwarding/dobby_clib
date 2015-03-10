@@ -23,23 +23,25 @@
                     #{binary() => jsonable()}.
 
 % metadata as an argument to publish
--type metadata_proplist() :: [{binary(), metadata_value()}] |
-                             delete |
-                             nochange |
-                             fun((jsonable()) -> jsonable()).
 -type metadata_value() :: jsonable() | delete.
+-type metadata_proplist() :: [{binary(), metadata_value()}].
+-type metadata_arg() :: metadata_proplist() |
+                        delete |
+                        nochange |
+                        fun((metadata_proplist()) -> metadata_proplist()).
 
 % metadata delivered to search
--type metadata_info() :: #{binary() => jsonable(),
-                           publisher_id => publisher_id(),
-                           datetime => binary()}.
+-type metadata_info() :: #{binary() => #{value => jsonable(),
+                                         publisher_id => publisher_id(),
+                                         datetime => binary()}
+                        }.
 
 % identifier as an argument to functions
 -type dby_endpoint() :: dby_identifier() |
-                        {dby_identifier(), metadata_proplist()}.
+                        {dby_identifier(), metadata_arg()}.
 
 % link as an argument to functions
--type link() :: {dby_endpoint(), dby_endpoint(), metadata_info()}.
+-type link() :: {dby_endpoint(), dby_endpoint(), metadata_arg()}.
 
 % publish options
 -type publish_type() :: 'persistent' | 'message'.
@@ -71,6 +73,7 @@
 -type search_algorithm() :: breadth | depth.
 -type loop_detection() :: none | identifier | link.
 -type search_options() :: search_algorithm() |
+                          identifier_type() |
                           {max_depth, non_neg_integer()} |
                           {loop, loop_detection()}.
 

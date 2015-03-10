@@ -169,30 +169,35 @@ unsubscribe(SubscriptionId) ->
 % List all identifiers starting at `StartIdentifier'
 % to a max depth of `Depth'.
 % @end
+-spec identifiers(dby_identifier(), non_neg_integer()) -> list().
 identifiers(StartIdentifier, Depth) ->
     dby:search(fun identifiers/4, [], StartIdentifier, [{max_depth, Depth}]).
 
 % @doc
 % Identifier metadata for `Identifier'.
 % @end
+-spec identifier(dby_identifier()) -> metadata_info().
 identifier(Identifier) ->
     dby:search(fun identifier_detail/4, [], Identifier, [{max_depth, 0}]).
 
 % @doc
 % List all subscriptions that are triggered by changes to  `Identifier'.
 % @end
+-spec subscriptions(dby_identifier()) -> [dby_identifier()].
 subscriptions(Identifier) ->
     dby:search(fun subscriptions_for_identifier/4, [], Identifier, [{max_depth, 1}, system]).
 
 % @doc
 % Subscription metadata `SubscriptionId'.
 % @end
+-spec subscription(dby_identifier()) -> system_metadata().
 subscription(SubscriptionId) ->
     dby:search(fun subscription_detail/4, [], SubscriptionId, [{max_depth, 0}, system]).
 
 % @doc
 % Links and metadata for link `Identifier'.
 % @end
+-spec links(dby_identifier()) -> [{dby_identifier(), metadata_info()}].
 links(Identifier) ->
     dby:search(fun links/4, [], Identifier, [{max_depth, 1}]).
 
