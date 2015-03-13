@@ -67,6 +67,55 @@ Link metadata of links from a starting point:
 dby:links(<<"B">>).
 ```
 
+# Dataloader
+The `dby_load' module provides functions to load data stored in files.
+The file format mimics the arguments to `dby:publish/3' and uses
+`dby:publish/3' to publish the data to Dobby:
+
+```
+file = [publishing-elements]
+publshing-element = endpoint | {endpoint, endpoint, link-metadata}
+endpoint = identifier | {identifier, identifier-metadata}
+link-metadata = metadata
+identifier-metadata = metadata
+metadata = [{key, jsonable}]
+key = binary()
+jsonable = true |
+           false |
+           null |
+           integer() |
+           float() |
+           binary() | 
+           [jsonable]
+           #{binary() => jsonable}
+```
+
+Example:
+```
+[
+ {{<<"172.31.15.20">>,
+   [{<<"who">>,<<"requester">>},{<<"label">>,<<"notfound_einval">>}]},
+  {<<"172.31.15.25">>,
+   [{<<"who">>,<<"resolved">>},{<<"label">>,<<"CAPILANO.infoblox.com">>}]},
+  [{<<"timestamp">>,<<"28-Feb-2015 23:56:01.236">>}]},
+
+ {{<<"172.31.1.161">>,
+   [{<<"who">>,<<"requester">>},{<<"label">>,<<"notfound_einval">>}]},
+  {<<"199.167.52.73">>,
+   [{<<"who">>,<<"resolved">>},{<<"label">>,<<"ww2.paloaltonetworks.com">>}]},
+  [{<<"timestamp">>,<<"28-Feb-2015 23:56:03.741">>}]},
+
+ {{<<"172.31.253.125">>,
+   [{<<"who">>,<<"requester">>},{<<"label">>,<<"notfound_einval">>}]},
+  {<<"17.110.228.98">>,
+   [{<<"who">>,<<"resolved">>},
+    {<<"label">>,<<"us-courier.push-apple.com.akadns.net">>}]},
+  [{<<"timestamp">>,<<"28-Feb-2015 23:56:04.156">>}]}
+].
+```
+
+The example creates three links and their enpdpoints.
+
 # Origin of Name
 The Infoblox OpenFlow controller projects follow a fabric theme.
 The overall project is called LOOM.  Dobby fabric is a type of
