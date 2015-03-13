@@ -22,7 +22,7 @@ This is an open source project sponsored by Infoblox.
 ```
 erl -pa ebin -setcookie dobby -name client@127.0.0.1
 ...
-1> net_adm:ping('dobby@127.0.0.1`).
+1> net_adm:ping('dobby@127.0.0.1').
 pong
 2> dby:install(dby).
 {module, dby}
