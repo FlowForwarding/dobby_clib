@@ -16,7 +16,9 @@
                              atom() => term()}.
 
 % JSONable datatypes for metadata
--type jsonable() :: integer() |
+-type jsonable() :: true |
+                    false |
+                    null | integer() |
                     float() |
                     list(jsonable()) |
                     binary() |
