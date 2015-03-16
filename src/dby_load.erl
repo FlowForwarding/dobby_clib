@@ -1,3 +1,6 @@
+%% @doc
+%% Load data from files.  Data files are Erlang terms.
+%% @end
 -module(dby_load).
 
 % load identifiers and links from files.
@@ -11,18 +14,20 @@
 % API functions
 % ------------------------------------------------------------------------------
 
-% @equiv load(Publisher, Filename, infinity).
+%% @doc
+%% @equiv load(Publisher, Filename, infinity)
+%% @end
 -spec load(binary(), string()) -> ok | {error, term()}.
 load(Publisher, Filename) ->
     load(Publisher, Filename, infinity).
 
-% @doc
-% `load/3' reads `Filename' and calls `dby:publish/3' with the contents
-% of the file using `Publisher' as te publisher.
-% The maximum batch size
-% is `BatchSize'.  If `BatchSize' is `infinity' the contents of the file
-% are not batched.
-% @end
+%% @doc
+%% `load/3' reads `Filename' and calls `dby:publish/3' with the contents
+%% of the file using `Publisher' as te publisher.
+%% The maximum batch size
+%% is `BatchSize'.  If `BatchSize' is `infinity' the contents of the file
+%% are not batched.
+%% @end
 -spec load(binary(), string(), inifinity | non_neg_integer()) -> ok | {error, term()}.
 load(Publisher, Filename, BatchSize) ->
     case file:consult(Filename) of
@@ -32,20 +37,20 @@ load(Publisher, Filename, BatchSize) ->
             Err
     end.
 
-% @equiv dirload(Publisher, Dirname, infinity).
+%% @equiv dirload(Publisher, Dirname, infinity)
 -spec dirload(binary(), string()) -> ok | {error, term()}.
 dirload(Publisher, Dirname) ->
     dirload(Publisher, Dirname, infinity).
 
-% @doc
-% `dirload/3' finds all the files in `Dirname' with the
-% `.dobby' extension and calls `load/2' on each one. Processing
-% aborts if there is an error. Each file is loaded as a separate
-% transaction, so an abort will result in a partial load of the data.
-% The maximum batch size
-% is `BatchSize'.  If `BatchSize' is `infinity' the contents of the file
-% are not batched.
-% @end
+%% @doc
+%% `dirload/3' finds all the files in `Dirname' with the
+%% `.dobby' extension and calls `load/2' on each one. Processing
+%% aborts if there is an error. Each file is loaded as a separate
+%% transaction, so an abort will result in a partial load of the data.
+%% The maximum batch size
+%% is `BatchSize'.  If `BatchSize' is `infinity' the contents of the file
+%% are not batched.
+%% @end
 -spec dirload(binary(), string(), infinity | non_neg_integer()) -> ok | {error, term()}.
 dirload(Publisher, Dirname, BatchSize) ->
     case file:list_dir(Dirname) of
