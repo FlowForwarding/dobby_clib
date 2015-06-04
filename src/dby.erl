@@ -13,12 +13,14 @@
          identifier/1,
          subscriptions/1,
          subscription/1,
+         link_metadata/2,
          links/1,
          identifiers/4,
          links/4,
          identifier_detail/4,
          subscriptions_for_identifier/4,
-         subscription_detail/4
+         subscription_detail/4,
+         link_search/1
         ]).
 
 -include_lib("dobby_clib/include/dobby.hrl").
@@ -186,10 +188,17 @@ subscription(SubscriptionId) ->
     dby:search(fun subscription_detail/4, [], SubscriptionId, [{max_depth, 0}, system]).
 
 %% @doc
-%% Links and metadata for link `Identifier'.
+%% Links and metadata for links to `Identifier'.
 -spec links(dby_identifier()) -> [{dby_identifier(), metadata_info()}].
 links(Identifier) ->
     dby:search(fun links/4, [], Identifier, [{max_depth, 1}]).
+
+%% @doc
+%% metadata for a link between `Identifier1` and `Identifier2`.
+-spec link_metadata(dby_identifier(), dby_identifier()) -> metadata_info().
+link_metadata(Identifier1, Identifier2) ->
+    SearchFn = link_search(Identifier2),
+    dby:search(SearchFn, [], Identifier1, [{max_depth, 1}]).
 
 %% @doc
 %% When used as the function for `dby:search/4', returns the list of
@@ -228,7 +237,7 @@ subscriptions_for_identifier(_, _, _, Acc0) ->
 %% all metadata for a subscription.
 %% StartIdentifier = SubscriptionId,
 %% Acc0 = ignored,
-%% Options = [{max_depth, 0}, system]
+%% Options = [{max_depth, 0}, system].
 -spec subscription_detail(dby_identifier(), all_metadata(), search_path(), undefined | system_metadata()) -> {stop, undefined | system_metadata()}.
 subscription_detail(_, Metadata = #{system := subscription}, _, _) ->
     {stop, Metadata};
@@ -244,6 +253,21 @@ links(Identifier, _, [{_, _, LinkMetadata} | _], Acc) ->
     {continue, [{Identifier, LinkMetadata} | Acc]};
 links(_, _, _, Acc) ->
     {continue, Acc}.
+
+%% @doc
+%% Generates a function that when used as the function for `dby:search/4`
+%% returns the metadata for the link between the starting identifier
+%% and `Identifier`.
+%% Acc0 = [].
+%% Options = [{max_depth 1}].
+-spec link_search(dby_identifier()) -> fun().
+link_search(NeighborIdentifier) ->
+    fun(NIdentifier, _, [{_, _, LinkMetadata} | _], _)
+                                    when NeighborIdentifier == NIdentifier ->
+        {stop, LinkMetadata};
+       (_, _, _, Acc) ->
+        {continue, Acc}
+    end.
 
 % =============================================================================
 % Local functions
