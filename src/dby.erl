@@ -1,6 +1,7 @@
 %% @doc
 %% dobby API
 %% @end
+%% @headerfile "../include/dobby.hrl"
 -module(dby).
 
 -export([install/1,
@@ -47,36 +48,60 @@ publish(PublisherId, Endpoint1, Endpoint2, LinkMetadata, Options) ->
 
 %% @doc
 %% `publish/3' adds or modifies identifiers and/or links, or sends a
-%% message via the identifiers and/or links. The PublisherId identifies
-%% the publisher.  The endpoints of a link are specified using an
-%% identifier or a tuple with the identifier and metadata.  If the
-%% endpoint is specified as an identifier, the metadata for that
-%% identifier is not changed. If the metadata is nochange the metadata
-%% for the endpoint is not changed.  If the endpoint is a tuple with
-%% the second element delete, the identifier is deleted from Dobby and
-%% all links to the identifier are also deleted.  If LinkMetadata is
-%% not specified or is nochange the link metadata is not changed. If
-%% link is a tuple with third element  delete the link between the two
-%% identifiers is deleted.  The identifiers themselves are otherwise
-%% not affected. Deleting an identifier deletes all links to the deleted
-%% identifier. If publish creates a new identifier or link and no
-%% metadata is provided, the metadata is set to null. Metadata may be
-%% any Erlang term that can be represented as a JSON. If the metadata
-%% key already exists, the metadata is replaced. If the metadata key
-%% does not exist the key and value is added. If the value is delete
-%% the metadata key is deleted. If the metadata is specified as a
-%% function, the function is called with the old metadata and the
-%% function is expected to return updated metadata for that link or
-%% identifier. The metadata is in the form of a property list. The
-%% return of the function is handled as if it was passed in directly
-%% as the property list. Fun should be a pure function as it may be
-%% called more than once.  The persistent option means all changes are
-%% persisted in Dobby.  The changes are made atomically.  That is, all
-%% the changes are made together or none are made. The message option
-%% means metadata changes are communicated to subscriptions but the
-%% changes are not persisted in dobby.  message is the default behavior.
-%% You can only message publish to existing endpoints and links.  You
-%% cannot use delete with message publish.
+%% message via the identifiers and/or links.
+%%
+%% The `PublisherId' identifies the publisher.
+%%
+%% The endpoints of a link are specified using an
+%% identifier or a tuple with the identifier and metadata:
+%%
+%% <ul>
+%% <li>If the endpoint is specified as an identifier, the metadata for
+%% that identifier is not changed.
+%%
+%% </li><li>If the metadata is `nochange' the metadata for the
+%% endpoint is not changed.
+%%
+%% </li><li>If the endpoint is a tuple with the second element
+%% `delete', the identifier is deleted from Dobby and all links to the
+%% identifier are also deleted.
+%% </li></ul>
+%%
+%% If `LinkMetadata' is not specified or is `nochange' the link
+%% metadata is not changed. If link is a tuple with third element
+%% `delete' the link between the two identifiers is deleted.  The
+%% identifiers themselves are otherwise not affected.
+%%
+%% Deleting an identifier deletes all links to the deleted identifier.
+%%
+%% If publish creates a new identifier or link and no metadata is
+%% provided, the metadata is set to `null'.
+%%
+%% Metadata may be any Erlang term that can be represented as a JSON.
+%%
+%% <ul>
+%% <li>If the metadata key already exists, the metadata is replaced.
+%%
+%% </li><li>If the metadata key does not exist the key and value is
+%% added.
+%%
+%% </li><li>If the value is `delete' the metadata key is deleted.
+%%
+%% </li><li>If the metadata is specified as a function, the function
+%% is called with the old metadata and the function is expected to
+%% return updated metadata for that link or identifier. The metadata
+%% is in the form of a property list. The return of the function is
+%% handled as if it was passed in directly as the property list. `Fun'
+%% should be a pure function as it may be called more than once.
+%% </li></ul>
+%%
+%% The `persistent' option means all changes are persisted in Dobby.
+%% The changes are made atomically.  That is, all the changes are made
+%% together or none are made. The `message' option means metadata
+%% changes are communicated to subscriptions but the changes are not
+%% persisted in dobby.  `message' is the default behavior.  You can
+%% only message publish to existing endpoints and links.  You cannot
+%% use `delete' with message publish.
 %%
 %% Returns `badarg' for `message' publish if one of the endppoints or the
 %% link between them does not exist.
