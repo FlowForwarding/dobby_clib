@@ -194,7 +194,7 @@ links(Identifier) ->
     dby:search(fun links/4, [], Identifier, [{max_depth, 1}]).
 
 %% @doc
-%% metadata for a link between `Identifier1` and `Identifier2`.
+%% metadata for a link between `Identifier1' and `Identifier2'.
 -spec link_metadata(dby_identifier(), dby_identifier()) -> metadata_info().
 link_metadata(Identifier1, Identifier2) ->
     SearchFn = link_search(Identifier2),
@@ -255,9 +255,9 @@ links(_, _, _, Acc) ->
     {continue, Acc}.
 
 %% @doc
-%% Generates a function that when used as the function for `dby:search/4`
+%% Generates a function that when used as the function for `dby:search/4'
 %% returns the metadata for the link between the starting identifier
-%% and `Identifier`.
+%% and `Identifier'.
 %% Acc0 = [].
 %% Options = [{max_depth 1}].
 -spec link_search(dby_identifier()) -> fun().
